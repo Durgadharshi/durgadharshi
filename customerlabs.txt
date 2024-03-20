@@ -1,0 +1,106 @@
+import React, { useState } from 'react';
+
+function SaveSegmentPage() {
+  const [showPopup, setShowPopup] = useState(false);
+  const [segmentName, setSegmentName] = useState('');
+  const [selectedSchemas, setSelectedSchemas] = useState([]);
+  const [availableSchemas, setAvailableSchemas] = useState([
+    { label: 'First name', value: 'first_name' },
+    { label: 'Last name', value: 'last_name' },
+    { label: 'Gender', value: 'gender' },
+    { label: 'Age', value: 'age' },
+    { label: 'Account Name', value: 'account_name' },
+    { label: 'City', value: 'city' },
+    { label: 'State', value: 'state' }
+  ]);
+  const [newSchema, setNewSchema] = useState('');
+
+  const handleSaveButtonClick = () => {
+    setShowPopup(true);
+  };
+
+  const handlePopupClose = () => {
+    setShowPopup(false);
+    // Clear the segment name and reset selected schemas and new schema
+    setSegmentName('');
+    setSelectedSchemas([]);
+    setNewSchema('');
+  };
+
+  const handleSegmentNameChange = (event) => {
+    setSegmentName(event.target.value);
+  };
+
+  const handleSchemaChange = (event) => {
+    setNewSchema(event.target.value);
+  };
+
+  const handleAddNewSchema = () => {
+    if (newSchema !== '' && !selectedSchemas.includes(newSchema)) {
+      setSelectedSchemas([...selectedSchemas, newSchema]);
+      setAvailableSchemas(availableSchemas.filter(schema => schema.value !== newSchema));
+      setNewSchema('');
+    }
+  };
+
+  const handleSaveSegment = () => {
+    // Prepare data to send to the server
+    const data = {
+      segment_name: segmentName
+    };
+    // Log selected schemas
+    data.selected_schemas = selectedSchemas;
+    console.log(data);
+    // Here you would send the data to the server
+    // Reset segment name, selected schemas, and available schemas
+    setSegmentName('');
+    setSelectedSchemas([]);
+    setAvailableSchemas([
+      { label: 'First name', value: 'first_name' },
+      { label: 'Last name', value: 'last_name' },
+      { label: 'Gender', value: 'gender' },
+      { label: 'Age', value: 'age' },
+      { label: 'Account Name', value: 'account_name' },
+      { label: 'City', value: 'city' },
+      { label: 'State', value: 'state' }
+    ]);
+    setShowPopup(false);
+  };
+
+  return (
+    <div>
+      <h1>Save Segment</h1>
+      <button onClick={handleSaveButtonClick}>Save Segment</button>
+
+      {showPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <span className="close" onClick={handlePopupClose}>&times;</span>
+            <h2>Enter Segment Name:</h2>
+            <input
+              type="text"
+              value={segmentName}
+              onChange={handleSegmentNameChange}
+            />
+            <h2>Add Schema to Segment:</h2>
+            <select value={newSchema} onChange={handleSchemaChange}>
+              <option value="">Select Schema</option>
+              {availableSchemas.map(schema => (
+                <option key={schema.value} value={schema.value}>{schema.label}</option>
+              ))}
+            </select>
+            <button onClick={handleAddNewSchema}>+ Add new schema</button>
+            {selectedSchemas.map((schema, index) => (
+              <div key={index}>
+                <p>{schema}</p>
+              </div>
+            ))}
+            <button onClick={handleSaveSegment}>Save</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default SaveSegmentPage;
